@@ -9,10 +9,15 @@ const PI_4_3:f32 = PI / 4.0 * 3.0;
 #[derive(Component)]
 pub(crate) struct SmallView;
 
+/// Add this to target pan_orbit_camera.
+/// panic when not set any ViewcubeBinding
+#[derive(Component)]
+pub struct ViewcubeBinding;
+
 use bevy::{
     prelude::*,
     render::view::RenderLayers,
-    core_pipeline::clear_color::ClearColorConfig
+    core_pipeline::clear_color::ClearColorConfig,
 };
 
 /// The function `create_small_view` creates a small 3D camera view with a directional light in Rust
@@ -52,4 +57,5 @@ pub mod prelude {
         BevyTridentCone
     };
     pub use crate::viewcube::BevyViewCubePlugin;
+    pub use crate::ViewcubeBinding;
 }

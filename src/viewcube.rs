@@ -1,6 +1,30 @@
 mod simple_viewcube;
 mod powerful_viewcube;
-use bevy::{app::{Plugin, Startup, Update}, ecs::{component::Component, entity::Entity, query::{With, Without}, schedule::IntoSystemConfigs, system::{Commands, Query}}, math::{UVec2, Vec3}, prelude::default, render::camera::Camera, transform::components::Transform, window::Window};
+use bevy::{
+    app::{
+        Plugin,
+        Startup,
+        Update
+    },
+    ecs::{
+        component::Component,
+        entity::Entity,
+        query::With,
+        schedule::IntoSystemConfigs,
+        system::{
+            Commands,
+            ParamSet,
+            Query
+        }
+    },
+    math::{
+        UVec2,
+        Vec3
+    },
+    prelude::default,
+    render::camera::Camera,
+    transform::components::Transform, window::Window
+};
 use bevy_panorbit_camera::PanOrbitCamera;
 
 use crate::{PI_2, PI_4, PI_4_3};
@@ -61,12 +85,13 @@ macro_rules! generate_viewcube_face {
     };
 }
 
-
 pub(crate) fn update_view(
     windows: Query<&Window>,
-    mut trident: Query<&mut Transform, With<ViewcubeCenter>>,
     mut camera: Query<&mut Camera, With<crate::SmallView>>,
-    orbit_cameras: Query<&Transform, (With<PanOrbitCamera>, Without<ViewcubeCenter>)>,
+    mut transform_query: ParamSet<(
+        Query<&mut Transform, With<ViewcubeCenter>>,
+        Query<&Transform, (With<PanOrbitCamera>, With<crate::ViewcubeBinding>)>,
+    )>
 ) {
     let window = windows.single();
     let mut cam = camera.single_mut();
@@ -80,8 +105,17 @@ pub(crate) fn update_view(
         ),
         ..default()
     });
+    let transform;
+    {
+        let orbit_cameras = transform_query.p1();
+        transform = if let Ok(tr) = orbit_cameras.get_single() {
+            tr.clone()
+        } else {
+            Transform::IDENTITY
+        }
+    }
+    let mut trident = transform_query.p0();
     let mut trident_transform = trident.single_mut();
-    let transform = orbit_cameras.single();
     trident_transform.rotation = transform.rotation.inverse();
 }
 

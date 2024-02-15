@@ -45,6 +45,7 @@ fn setup(
         },
         // Need set camera layer, or viewcube would be selected on this camera.
         RenderLayers::layer(0),
+        ViewcubeBinding,
     ));
     commands.spawn(DirectionalLightBundle {
         ..Default::default()
