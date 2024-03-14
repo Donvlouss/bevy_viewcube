@@ -1,7 +1,4 @@
-use bevy::{
-    prelude::*,
-    render::view::RenderLayers
-};
+use bevy::prelude::*;
 use bevy_panorbit_camera::{
     PanOrbitCamera,
     PanOrbitCameraPlugin
@@ -15,16 +12,12 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugins(PanOrbitCameraPlugin)
         .add_plugins(DefaultPickingPlugins)
+        // bevy_ui debug bug(https://github.com/aevyrie/bevy_mod_picking/issues/317), use default to disable debug ui
+        .insert_resource(DebugPickingMode::Normal)
         .add_plugins(BevyViewCubePlugin{use_powerful_viewcube:true})
         .add_systems(Startup, setup)
         .run();
 }
-
-#[derive(Component, Default)]
-struct SmallView;
-
-#[derive(Component, Default)]
-struct Trident;
 
 fn setup(
     mut commands: Commands,
@@ -33,18 +26,13 @@ fn setup(
 ) {
     commands.spawn((
         Camera3dBundle {
-            transform: Transform::from_xyz(0.0, 0.0, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
-            camera: Camera {
-                ..default()
-            },
+                        transform: Transform::from_xyz(0.0, 0.0, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
             ..default()
         },
         PanOrbitCamera {
             allow_upside_down: true,
             ..Default::default()
         },
-        // Need set camera layer, or viewcube would be selected on this camera.
-        RenderLayers::layer(0),
         ViewcubeBinding,
     ));
     commands.spawn(DirectionalLightBundle {
@@ -58,9 +46,10 @@ fn setup(
     // Trident
     commands.spawn((
         MaterialMeshBundle {
-            mesh: meshes.add((BevyTridentAxis::default()).into()),
+            mesh: meshes.add(BevyTridentAxis::default()),
             material: materials.add(StandardMaterial::default()),
             ..Default::default()
         },
+        PickableBundle::default(),
     ));
 }

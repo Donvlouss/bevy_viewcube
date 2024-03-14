@@ -2,9 +2,7 @@ mod simple_viewcube;
 mod powerful_viewcube;
 use bevy::{
     app::{
-        Plugin,
-        Startup,
-        Update
+        Plugin, Startup, Update
     },
     ecs::{
         component::Component,
@@ -23,7 +21,8 @@ use bevy::{
     },
     prelude::default,
     render::camera::Camera,
-    transform::components::Transform, window::Window
+    transform::components::Transform,
+    window::Window
 };
 use bevy_panorbit_camera::PanOrbitCamera;
 
@@ -72,7 +71,7 @@ pub(crate) struct ViewcubeHit(pub CubePart);
 macro_rules! generate_viewcube_face {
     ($meshes:ident, $materials: ident, $part: expr, $color: expr, $transform: expr, $component: expr) => {
         (MaterialMeshBundle {
-            mesh: $meshes.add($part.clone().into()),
+            mesh: $meshes.add($part.clone()),
             material: $materials.add(StandardMaterial::from($color)),
             transform: $transform,
             ..Default::default()
@@ -93,7 +92,7 @@ pub(crate) fn update_view(
         Query<&Transform, (With<PanOrbitCamera>, With<crate::ViewcubeBinding>)>,
     )>
 ) {
-    let window = windows.single();
+    let window: &Window = windows.single();
     let mut cam = camera.single_mut();
     cam.viewport = Some(bevy::render::camera::Viewport {
         physical_position: UVec2::new(
@@ -117,6 +116,7 @@ pub(crate) fn update_view(
     let mut trident = transform_query.p0();
     let mut trident_transform = trident.single_mut();
     trident_transform.rotation = transform.rotation.inverse();
+
 }
 
 pub(crate) fn viewcube_hit(

@@ -1,8 +1,9 @@
 use bevy::{
     prelude::*,
-    render::{
-        view::RenderLayers,
-        mesh::shape::UVSphere
+    render::view::RenderLayers,
+    math::primitives::{
+        Plane3d,
+        Sphere,
     }
 };
 use bevy_mod_picking::prelude::*;
@@ -22,7 +23,7 @@ pub fn setup(
     let center = Vec3::new(0.6, 0.6, 0.6);
     commands.spawn((
         MaterialMeshBundle {
-            mesh: meshes.add(UVSphere{radius: 0.01, sectors: 1, stacks: 1}.into()),
+            mesh: meshes.add(Sphere{radius: 0.01}),
             material: materials.add(StandardMaterial::default()),
             ..Default::default()
         },
@@ -31,7 +32,7 @@ pub fn setup(
     )).with_children(|builder| {
         builder.spawn((
             MaterialMeshBundle {
-                mesh: meshes.add(crate::prelude::BevyTridentAxis::default().into()),
+                mesh: meshes.add(crate::prelude::BevyTridentAxis::default()),
                 material: materials.add(StandardMaterial::default()),
                 transform: Transform::from_translation(-center),
                 ..Default::default()
@@ -48,10 +49,7 @@ pub fn generate_viewcube_simple_face(
     meshes: &mut Assets<Mesh>,
     materials: &mut Assets<StandardMaterial>,
 ) {
-    let plane = shape::Plane {
-        size,
-        ..Default::default()
-    };
+    let plane = Plane3d::default().mesh().size(size, size);
     let half = 0.4f32;
     // Right (+X)
     builder.spawn(
