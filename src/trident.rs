@@ -2,12 +2,12 @@ pub mod arrow;
 
 use bevy::{
     math::{
-        Vec2, Vec3
+        primitives::Sphere, Vec2, Vec3
     },
     render::{
         mesh::{
-            shape, Indices, Mesh, VertexAttributeValues
-        }, render_resource::PrimitiveTopology
+            Indices, Mesh, VertexAttributeValues
+        }, render_asset::RenderAssetUsages, render_resource::PrimitiveTopology
     },
 };
 
@@ -55,8 +55,8 @@ impl From<BevyTridentAxis> for Mesh {
         let indices = [x_indices, y_indices, z_indices, o_indices].concat();
         let colors = [x_colors, y_colors, z_colors, o_colors].concat();
 
-        let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
-        mesh.set_indices(Some(Indices::U32(indices)));
+        let mut mesh = Mesh::new(PrimitiveTopology::TriangleList, RenderAssetUsages::default());
+        mesh.insert_indices(Indices::U32(indices));
         mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, positions);
         mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
         mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, uvs);
@@ -222,11 +222,7 @@ impl BevyTridentAxis {
             }
         });
         // Choose largest radius for sphere
-        let sphere = shape::UVSphere {
-            radius,
-            sectors: 8,
-            stacks: 8,
-        };
+        let sphere = Sphere{radius};
         let mesh = Mesh::from(sphere);
 
         let positions = if let Some(VertexAttributeValues::Float32x3(vert_positions)) =

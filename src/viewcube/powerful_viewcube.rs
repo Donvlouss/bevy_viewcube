@@ -1,13 +1,12 @@
 use bevy::{
     prelude::*,
     render::{
-        mesh::{
-            shape::UVSphere,
-            Indices
-        },
+        mesh::Indices,
+        render_asset::RenderAssetUsages,
         render_resource::PrimitiveTopology,
-        view::RenderLayers,
-    }
+        view::RenderLayers
+    },
+    math::primitives::Sphere,
 };
 use bevy_mod_picking::prelude::*;
 
@@ -78,8 +77,8 @@ impl From<ViewcubeEdge> for Mesh {
         let mut normals = vec![];
         normals.resize_with(4, || normal);
 
-        let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
-        mesh.set_indices(Some(Indices::U32(indices)));
+        let mut mesh = Mesh::new(PrimitiveTopology::TriangleList, RenderAssetUsages::default());
+        mesh.insert_indices(Indices::U32(indices));
         mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, positions);
         mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
         mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, uvs);
@@ -151,8 +150,8 @@ impl From<ViewcubeCorner> for Mesh {
         let mut normals = vec![];
         normals.resize_with(3, || normal);
 
-        let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
-        mesh.set_indices(Some(Indices::U32(indices)));
+        let mut mesh = Mesh::new(PrimitiveTopology::TriangleList, RenderAssetUsages::default());
+        mesh.insert_indices(Indices::U32(indices));
         mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, positions);
         mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
         mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, uvs);
@@ -170,7 +169,7 @@ pub fn setup(
 
     commands.spawn((
         MaterialMeshBundle {
-            mesh: meshes.add(UVSphere{radius: 0.01, sectors: 1, stacks: 1}.into()),
+            mesh: meshes.add(Sphere{ radius: 0.01 }),
             material: materials.add(StandardMaterial::default()),
             ..Default::default()
         },
@@ -179,7 +178,7 @@ pub fn setup(
     )).with_children(|builder| {
         builder.spawn((
             MaterialMeshBundle {
-                mesh: meshes.add(crate::prelude::BevyTridentAxis::default().into()),
+                mesh: meshes.add(crate::prelude::BevyTridentAxis::default()),
                 material: materials.add(StandardMaterial::default()),
                 transform: Transform::from_translation(-center),
                 ..Default::default()

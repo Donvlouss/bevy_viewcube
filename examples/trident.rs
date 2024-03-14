@@ -1,7 +1,10 @@
 use bevy::{
-    prelude::*,
-    core_pipeline::clear_color::ClearColorConfig, 
-    render::view::RenderLayers
+    prelude::*, 
+    render::{
+        camera::ClearColorConfig,
+        view::RenderLayers,
+    },
+    math::primitives::Sphere
 };
 use bevy_panorbit_camera::{
     PanOrbitCamera,
@@ -13,7 +16,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(PanOrbitCameraPlugin)
-        .add_systems(Startup, setup)
+                .add_systems(Startup, setup)
         .add_systems(Update, update_view)
         .run();
 }
@@ -49,21 +52,21 @@ fn setup(
     
     // x
     commands.spawn(MaterialMeshBundle{
-        mesh: meshes.add(Mesh::from(shape::UVSphere { radius: 0.75, sectors: 8, stacks: 8 })),
+        mesh: meshes.add(Mesh::from(Sphere { radius: 0.75})),
         material: materials.add(StandardMaterial::from(Color::Rgba { red: 1.0, green: 0.0, blue: 0.0, alpha: 1.0 })),
         transform: Transform::from_xyz(5.0, 0.0, 0.0),
         ..Default::default()
     });
     // y
     commands.spawn(MaterialMeshBundle{
-        mesh: meshes.add(Mesh::from(shape::UVSphere { radius: 0.75, sectors: 8, stacks: 8 })),
+        mesh: meshes.add(Mesh::from(Sphere { radius: 0.75})),
         material: materials.add(StandardMaterial::from(Color::Rgba { red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0 })),
         transform: Transform::from_xyz(0.0, 5.0, 0.0),
         ..Default::default()
     });
     // z
     commands.spawn(MaterialMeshBundle{
-        mesh: meshes.add(Mesh::from(shape::UVSphere { radius: 0.75, sectors: 8, stacks: 8 })),
+        mesh: meshes.add(Mesh::from(Sphere { radius: 0.75})),
         material: materials.add(StandardMaterial::from(Color::Rgba { red: 0.0, green: 0.0, blue: 1.0, alpha: 1.0 })),
         transform: Transform::from_xyz(0.0, 0.0, 5.0),
         ..Default::default()
@@ -72,14 +75,14 @@ fn setup(
     // Trident
     commands.spawn((
         MaterialMeshBundle {
-            mesh: meshes.add((BevyTridentAxis::default()).into()),
+            mesh: meshes.add(BevyTridentAxis::default()),
             material: materials.add(StandardMaterial::default()),
             ..Default::default()
         },
     ));
     commands.spawn((
         MaterialMeshBundle {
-            mesh: meshes.add((BevyTridentAxis::default()).into()),
+            mesh: meshes.add(BevyTridentAxis::default()),
             material: materials.add(StandardMaterial::default()),
             ..Default::default()
         },
@@ -91,10 +94,10 @@ fn setup(
         Camera3dBundle{
             camera: Camera {
                 order: 1,
+                clear_color: ClearColorConfig::None,
                 ..Default::default()
             },
             camera_3d: Camera3d {
-                clear_color: ClearColorConfig::None,
                 depth_load_op: bevy::core_pipeline::core_3d::Camera3dDepthLoadOp::Clear(0.),
                 ..default()
             },
